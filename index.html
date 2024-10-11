@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orla Digital de Estudiantes y Profesores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .orla-section {
+            margin-bottom: 40px;
+        }
+        .orla-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .student-item, .teacher-item {
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 150px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .student-item:hover, .teacher-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .student-photo, .teacher-photo {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+        .student-item:hover .student-photo, 
+        .teacher-item:hover .teacher-photo {
+            opacity: 0.8;
+        }
+        .student-name, .teacher-name {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #personVideo {
+            width: 100%;
+            max-width: 560px;
+            display: block;
+            margin: 20px auto 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Orla Digital</h1>
+        
+        <div class="orla-section">
+            <h2>Estudiantes</h2>
+            <div class="orla-grid" id="studentsGrid"></div>
+        </div>
+        
+        <div class="orla-section">
+            <h2>Profesores</h2>
+            <div class="orla-grid" id="teachersGrid"></div>
+        </div>
+    </div>
+
+    <div id="personModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="personName"></h2>
+            <video id="personVideo" controls autoplay>
+                Tu navegador no soporta el elemento de video.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        var students = [
+            { id: 1, name: 'Ana García', photo: '/gif.webp', video: '/reflex.mp4' },
+            { id: 2, name: 'Carlos Rodríguez', photo: '/gif.webp', video: '/reflex.mp4' },
+            { id: 3, name: 'María López', photo: '/gif.webp', video: '/reflex.mp4' },
+            { id: 4, name: 'Juan Martínez', photo: '/gif.webp', video: '/reflex.mp4' },
+        ];
+
+        var teachers = [
+            { id: 1, name: 'Prof. Laura Sánchez', photo: '/gif.webp', video: '/reflex.mp4' },
+            { id: 2, name: 'Prof. Pedro Gómez', photo: '/gif.webp', video: '/reflex.mp4' },
+        ];
+
+        var studentsGrid = document.getElementById('studentsGrid');
+        var teachersGrid = document.getElementById('teachersGrid');
+        var modal = document.getElementById('personModal');
+        var closeBtn = document.getElementsByClassName('close')[0];
+        var personName = document.getElementById('personName');
+        var personVideo = document.getElementById('personVideo');
+
+        function createPersonElement(person, isTeacher) {
+            var div = document.createElement('div');
+            div.className = isTeacher ? 'teacher-item' : 'student-item';
+            div.innerHTML = 
+                '<img src="' + person.photo + '" alt="' + person.name + '" class="' + (isTeacher ? 'teacher-photo' : 'student-photo') + '">' +
+                '<p class="' + (isTeacher ? 'teacher-name' : 'student-name') + '">' + person.name + '</p>';
+            div.addEventListener('click', function() {
+                openModal(person);
+            });
+            return div;
+        }
+
+        function openModal(person) {
+            personName.textContent = person.name;
+            personVideo.src = person.video;
+            modal.style.display = 'block';
+            personVideo.play();
+        }
+
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+            personVideo.pause();
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                personVideo.pause();
+            }
+        };
+
+        for (var i = 0; i < students.length; i++) {
+            studentsGrid.appendChild(createPersonElement(students[i], false));
+        }
+
+        for (var i = 0; i < teachers.length; i++) {
+            teachersGrid.appendChild(createPersonElement(teachers[i], true));
+        }
+    </script>
+</body>
+</html>
