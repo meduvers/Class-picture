@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orla Digital de Estudiantes y Profesores</title>
+    <link rel="icon" href="/cambridge.png" type="image/x-icon">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,6 +12,10 @@
             padding: 20px;
             box-sizing: border-box;
             background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
         }
         .container {
             max-width: 1200px;
@@ -18,24 +23,58 @@
             background-color: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
         }
-        h1, h2 {
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            color: #333;
         }
+
+        .spacer {
+            width: 100px;
+        }
+
+        .header img {
+            max-width: 100px;
+            height: auto;
+            margin: 0 10px;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+            }
+            .header img {
+                max-width: 70px;
+            }
+            .spacer {
+                display: none;
+            }
+        }
+
+        h1, h2 {
+            color: #333;
+            margin: 5px 0;
+        }
+
         .orla-section {
             margin-bottom: 40px;
         }
+
         .orla-grid {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
         }
-        .student-item, .teacher-item {
+
+        .student-item, .teacher-item, .add-item {
             text-align: center;
-            background-color: #f9f9f9;
             padding: 10px;
             border-radius: 8px;
             transition: all 0.3s ease;
@@ -43,28 +82,42 @@
             flex-direction: column;
             align-items: center;
             width: 150px;
-            cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .student-item:hover, .teacher-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+
         .student-photo, .teacher-photo {
             width: 130px;
-            height: 130px;
+            height: 200px;
             border-radius: 50%;
             object-fit: cover;
             transition: opacity 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
+
         .student-item:hover .student-photo, 
         .teacher-item:hover .teacher-photo {
             opacity: 0.8;
         }
+
         .student-name, .teacher-name {
             margin-top: 10px;
             font-size: 14px;
         }
+
+        .edit-button {
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .edit-button:hover {
+            color: #000;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -76,6 +129,7 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
+
         .modal-content {
             background-color: #fefefe;
             margin: 15% auto;
@@ -85,6 +139,7 @@
             max-width: 600px;
             border-radius: 10px;
         }
+
         .close {
             color: #aaa;
             float: right;
@@ -92,12 +147,46 @@
             font-weight: bold;
             cursor: pointer;
         }
+
         .close:hover,
         .close:focus {
             color: #000;
             text-decoration: none;
             cursor: pointer;
         }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form label {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
         #personVideo {
             width: 100%;
             max-width: 560px;
@@ -105,26 +194,53 @@
             margin: 20px auto 0;
             border-radius: 8px;
         }
+
+        .delete-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Desactivar puntero si no hay video */
+        .no-video {
+            cursor: default;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Orla Digital</h1>
+        <div class="header">
+            <div class="spacer"></div> <!-- Div vacío del tamaño del logo -->
+            <div><img src="/cambridge.png" alt="Logo"></div>
+            <div>
+                <h1>Universidad de Madrid</h1>
+                <h2>2025 Ingeniería</h2>
+            </div>
+            <div class="spacer"></div> <!-- Otro div vacío del tamaño del logo -->
+        </div>
         
         <div class="orla-section">
-            <h2>Estudiantes</h2>
             <div class="orla-grid" id="studentsGrid"></div>
         </div>
         
         <div class="orla-section">
-            <h2>Profesores</h2>
             <div class="orla-grid" id="teachersGrid"></div>
         </div>
     </div>
 
+    <!-- Modal para ver video -->
     <div id="personModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="personName"></h2>
             <video id="personVideo" controls autoplay>
                 Tu navegador no soporta el elemento de video.
@@ -132,36 +248,81 @@
         </div>
     </div>
 
+    <!-- Modal para agregar/editar personas -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2 id="modalTitle">Editar Persona</h2>
+            <form id="personForm" onsubmit="savePerson(event)">
+                <label for="personNameInput">Nombre:</label>
+                <input type="text" id="personNameInput" required>
+                
+                <label for="personPhotoInput">URL de la Foto:</label>
+                <input type="text" id="personPhotoInput" required>
+
+                <label for="personVideoInput">URL del Video (opcional):</label>
+                <input type="text" id="personVideoInput">
+                
+                <input type="hidden" id="editIndex"> <!-- Para saber si estamos editando o añadiendo -->
+                <button type="submit">Guardar</button>
+                <button type="button" class="delete-button" onclick="deletePerson()">Eliminar</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         var students = [
-            { id: 1, name: 'Ana García', photo: '/gif.webp', video: '/reflex.mp4' },
-            { id: 2, name: 'Carlos Rodríguez', photo: '/gif.webp', video: '/reflex.mp4' },
-            { id: 3, name: 'María López', photo: '/gif.webp', video: '/reflex.mp4' },
-            { id: 4, name: 'Juan Martínez', photo: '/gif.webp', video: '/reflex.mp4' },
+            { name: 'Ana García', photo: '/gif.webp', video: '/reflex.mp4' },
+            { name: 'Carlos Rodríguez', photo: '/gif.webp', video: '' } /* Sin video */
         ];
 
         var teachers = [
-            { id: 1, name: 'Laura Sánchez', photo: '/gif.webp', video: '/reflex.mp4' },
-            { id: 2, name: 'Pedro Gómez', photo: '/gif.webp', video: '/reflex.mp4' },
+            { name: 'Laura Sánchez', photo: '/gif.webp', video: '/reflex.mp4' },
+            { name: 'Pedro Gómez', photo: '/gif.webp', video: '' } /* Sin video */
         ];
 
         var studentsGrid = document.getElementById('studentsGrid');
         var teachersGrid = document.getElementById('teachersGrid');
         var modal = document.getElementById('personModal');
-        var closeBtn = document.getElementsByClassName('close')[0];
         var personName = document.getElementById('personName');
         var personVideo = document.getElementById('personVideo');
+        var editingIndex = null; // Para identificar si estamos editando
 
         function createPersonElement(person, isTeacher) {
             var div = document.createElement('div');
             div.className = isTeacher ? 'teacher-item' : 'student-item';
-            div.innerHTML = 
-                '<img src="' + person.photo + '" alt="' + person.name + '" class="' + (isTeacher ? 'teacher-photo' : 'student-photo') + '">' +
-                '<p class="' + (isTeacher ? 'teacher-name' : 'student-name') + '">' + person.name + '</p>';
-            div.addEventListener('click', function() {
-                openModal(person);
-            });
+            
+            // Crear el botón de editar
+            var editButton = '<button class="edit-button" onclick="editPerson(\'' + person.name + '\')">✏️</button>';
+
+            // Comprobar si tiene video y ajustar estilo si no lo tiene
+            if (!person.video) {
+                div.classList.add('no-video'); // Desactivar puntero y clic
+            }
+
+            // Rellenar el contenido
+            div.innerHTML = '<img src="' + person.photo + '" alt="Foto de ' + person.name + '" class="' + (isTeacher ? 'teacher-photo' : 'student-photo') + '">' +
+                            '<p class="' + (isTeacher ? 'teacher-name' : 'student-name') + '">' + person.name + editButton + '</p>';
+
+            // Solo asignar evento click si tiene video
+            if (person.video) {
+                div.onclick = function() {
+                    openModal(person);
+                };
+            }
+
             return div;
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            personVideo.pause(); // Pausar el video al cerrar el modal
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
         }
 
         function openModal(person) {
@@ -171,25 +332,116 @@
             personVideo.play();
         }
 
-        closeBtn.onclick = function() {
-            modal.style.display = 'none';
-            personVideo.pause();
-        };
+        function editPerson(name) {
+            var person = students.find((p, index) => {
+                if (p.name === name) {
+                    editingIndex = index;
+                    return true;
+                }
+                return false;
+            });
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-                personVideo.pause();
+            if (!person) {
+                person = teachers.find((p, index) => {
+                    if (p.name === name) {
+                        editingIndex = 't-' + index;
+                        return true;
+                    }
+                    return false;
+                });
             }
-        };
 
-        for (var i = 0; i < students.length; i++) {
-            studentsGrid.appendChild(createPersonElement(students[i], false));
+            if (person) {
+                openEditModal(person);
+            }
         }
 
-        for (var i = 0; i < teachers.length; i++) {
-            teachersGrid.appendChild(createPersonElement(teachers[i], true));
+        function openEditModal(person = null) {
+            document.getElementById('personNameInput').value = person ? person.name : '';
+            document.getElementById('personPhotoInput').value = person ? person.photo : '';
+            document.getElementById('personVideoInput').value = person ? person.video : '';
+            
+            document.getElementById('modalTitle').textContent = person ? 'Editar Persona' : 'Añadir Persona';
+            document.getElementById('editIndex').value = editingIndex;
+
+            document.getElementById('editModal').style.display = 'block';
         }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            editingIndex = null;
+        }
+
+        function savePerson(event) {
+            event.preventDefault();
+            
+            var name = document.getElementById('personNameInput').value;
+            var photo = document.getElementById('personPhotoInput').value;
+            var video = document.getElementById('personVideoInput').value || '';
+
+            var person = { name: name, photo: photo, video: video };
+
+            if (editingIndex !== null) {
+                if (typeof editingIndex === 'string' && editingIndex.startsWith('t-')) {
+                    var index = parseInt(editingIndex.split('-')[1]);
+                    teachers[index] = person;
+                } else {
+                    students[editingIndex] = person;
+                }
+            } else {
+                students.push(person);
+            }
+
+            closeEditModal();
+            refreshGrid();
+        }
+
+        function deletePerson() {
+            if (editingIndex !== null) {
+                if (typeof editingIndex === 'string' && editingIndex.startsWith('t-')) {
+                    var index = parseInt(editingIndex.split('-')[1]);
+                    teachers.splice(index, 1);
+                } else {
+                    students.splice(editingIndex, 1);
+                }
+            }
+
+            closeEditModal();
+            refreshGrid();
+        }
+
+        function refreshGrid() {
+            studentsGrid.innerHTML = '';
+            teachersGrid.innerHTML = '';
+
+            students.forEach(function(student) {
+                studentsGrid.appendChild(createPersonElement(student, false));
+            });
+
+            teachers.forEach(function(teacher) {
+                teachersGrid.appendChild(createPersonElement(teacher, true));
+            });
+
+            var addStudentDiv = document.createElement('div');
+            addStudentDiv.className = 'add-item';
+            addStudentDiv.innerHTML = 
+                '<div onclick="openEditModal()">' +
+                '<img src="/plus.svg" alt="Añadir Estudiante" class="student-photo">' +
+                '<p class="student-name">Añadir Estudiante</p>' +
+                '</div>';
+            studentsGrid.appendChild(addStudentDiv);
+
+            var addTeacherDiv = document.createElement('div');
+            addTeacherDiv.className = 'add-item';
+            addTeacherDiv.innerHTML = 
+                '<div onclick="openEditModal()">' +
+                '<img src="/plus.svg" alt="Añadir Profesor" class="teacher-photo">' +
+                '<p class="teacher-name">Añadir Profesor</p>' +
+                '</div>';
+            teachersGrid.appendChild(addTeacherDiv);
+        }
+
+        refreshGrid();
     </script>
 </body>
 </html>
